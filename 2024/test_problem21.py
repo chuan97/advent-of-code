@@ -41,6 +41,8 @@ def test_num_complexity():
     assert num_complexity(test_codes[2]) == 179
     assert num_complexity(test_codes[3]) == 456
     assert num_complexity(test_codes[4]) == 379
+    assert num_complexity("279A") == 279
+    assert num_complexity("480A") == 480
 
 
 def test_find_shortest_sequence():
