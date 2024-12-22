@@ -60,6 +60,43 @@ def find_shortest_sequence(code: str, n_num_keypads: int) -> str:
     return sequence
 
 
+def find_shortest_sequence_debug(code: str, n_num_keypads: int) -> Tuple[str, list]:
+    """find shortest sequence of inputs that will produce the given code
+
+    Args:
+        code (str): the code to be produced
+        N_num_keypads (int): number of numberic keypads in the chain of commands
+
+    Returns:
+        str: the shortest sequence that produces the code
+    """
+    start = "A"
+    sequence = ""
+    seq_as_list = []
+    for char in code:
+        coord_diff = key_coord_diff(start, char, "num")
+        path = compose_path(coord_diff)
+        sequence += path
+        seq_as_list.append(path)
+        start = char
+
+    seqs_as_lists = [seq_as_list]
+    for _ in range(n_num_keypads - 1):
+        goal = sequence
+        start = "A"
+        sequence = ""
+        seq_as_list = []
+        for char in goal:
+            coord_diff = key_coord_diff(start, char, "dir")
+            path = compose_path(coord_diff)
+            sequence += path
+            seq_as_list.append(path)
+            start = char
+        seqs_as_lists.append(seq_as_list)
+
+    return sequence, seqs_as_lists
+
+
 def key_coord_diff(a: str, b: str, type_: str) -> Tuple[int, int]:
     """find the difference in coordinates between two keys on the keypad
 
@@ -128,3 +165,19 @@ if __name__ == "__main__":
         length * num_complexity(code) for length, code in zip(lengths, codes)
     ]
     print(sum(complexities))
+
+    print()
+    print("029A")
+    sequence, seqs_as_lists = find_shortest_sequence_debug("029A", 3)
+    print(sequence)
+    print("<vA<AA>>^AvAA<^A>A<v<A>>^AvA^A<vA>^A<v<A>^A>AAvA^A<v<A>A>^AAAvA<^A>A")
+    print(len(sequence))
+    for seq in seqs_as_lists:
+        print(seq)
+
+    print()
+    print("179A")
+    sequence, seqs_as_lists = find_shortest_sequence_debug("179A", 3)
+    print(len(sequence))
+    for seq in seqs_as_lists:
+        print(seq)
