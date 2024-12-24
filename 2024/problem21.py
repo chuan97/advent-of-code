@@ -26,7 +26,7 @@ dir_keypad = {
     "A": (2, 1),
 }
 
-N_NUM_KPADS = 3
+N_NUM_KPADS = 26
 
 
 def find_shortest_sequence(code: str, n_num_keypads: int) -> str:
@@ -43,7 +43,7 @@ def find_shortest_sequence(code: str, n_num_keypads: int) -> str:
     sequence = ""
     for char in code:
         coord_diff = key_coord_diff(start, char, "num")
-        path = compose_path(coord_diff)
+        path = compose_path(coord_diff, "num")
         sequence += path
         start = char
 
@@ -53,7 +53,7 @@ def find_shortest_sequence(code: str, n_num_keypads: int) -> str:
         sequence = ""
         for char in goal:
             coord_diff = key_coord_diff(start, char, "dir")
-            path = compose_path(coord_diff)
+            path = compose_path(coord_diff, "num")
             sequence += path
             start = char
 
@@ -75,7 +75,7 @@ def find_shortest_sequence_debug(code: str, n_num_keypads: int) -> Tuple[str, li
     seq_as_list = []
     for char in code:
         coord_diff = key_coord_diff(start, char, "num")
-        path = compose_path(coord_diff)
+        path = compose_path(coord_diff, "num")
         sequence += path
         seq_as_list.append(path)
         start = char
@@ -88,7 +88,7 @@ def find_shortest_sequence_debug(code: str, n_num_keypads: int) -> Tuple[str, li
         seq_as_list = []
         for char in goal:
             coord_diff = key_coord_diff(start, char, "dir")
-            path = compose_path(coord_diff)
+            path = compose_path(coord_diff, "num")
             sequence += path
             seq_as_list.append(path)
             start = char
@@ -120,11 +120,12 @@ def key_coord_diff(a: str, b: str, type_: str) -> Tuple[int, int]:
     return (b_coord[0] - a_coord[0], b_coord[1] - a_coord[1])
 
 
-def compose_path(coord_diff: Tuple[int, int]) -> str:
+def compose_path(coord_diff: Tuple[int, int], type_: str) -> str:
     """compose a path using the directional keypad that produces the coordinate difference
 
     Args:
         coord_diff (tuple[2]): difference in coordinates as 2-vector
+        type (str): type of keypad
 
     Returns:
         str: path composed
@@ -135,13 +136,20 @@ def compose_path(coord_diff: Tuple[int, int]) -> str:
     path = ""
     if n_hsteps_signed > 0:
         path += ">" * n_hsteps_signed
-    elif n_hsteps_signed < 0:
+    if type_ == "num":
+        if n_vsteps_signed > 0:
+            path += "^" * n_vsteps_signed
+        elif n_vsteps_signed < 0:
+            path += "v" * abs(n_vsteps_signed)
+    elif type_ == "dir":
+        if n_vsteps_signed < 0:
+            path += "v" * abs(n_vsteps_signed)
+        elif n_vsteps_signed > 0:
+            path += "^" * n_vsteps_signed
+    else:
+        raise ValueError(f"Invalid type: '{type_}', must be 'num' or 'dir'")
+    if n_hsteps_signed < 0:
         path += "<" * abs(n_hsteps_signed)
-
-    if n_vsteps_signed > 0:
-        path += "^" * n_vsteps_signed
-    elif n_vsteps_signed < 0:
-        path += "v" * abs(n_vsteps_signed)
 
     return path + "A"
 
@@ -158,7 +166,8 @@ def num_complexity(code: str) -> int:
     return int(code[:-1])
 
 
-if __name__ == "__main__":
+def main():
+    """compute the sum of complexities of the given codes"""
     lengths = [len(find_shortest_sequence(code, N_NUM_KPADS)) for code in codes]
     print(lengths)
     complexities = [
@@ -181,3 +190,7 @@ if __name__ == "__main__":
     print(len(sequence))
     for seq in seqs_as_lists:
         print(seq)
+
+
+if __name__ == "__main__":
+    main()
