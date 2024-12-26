@@ -48,7 +48,7 @@ dir_keypad_effects = {
 
 inv_dir_keypad = {v: k for k, v in dir_keypad.items()}
 
-N_NUM_KPADS = 26
+N_NUM_KPADS = 3
 
 
 @lru_cache
